@@ -1,42 +1,61 @@
-#!/usr/bin/env python3
+from os import system,#!/usr/bin/env python3
 
 #Imported Moduels
 import MySQLdb
 import pandas as pd
+import os
 import csv
 import time
 from sqlalchemy import create_engine
 
 
 #Function to view the database
-def PrintDB(password, database):
+def PrintDB(password, database, table):
         #Password is assumed "root", if differnet change the password to your root password
         db = MySQLdb.connect(host="localhost", user="root", passwd=password, db=database)
 
         cur = db.cursor()
-        cur.execute("SELECT * FROM Hosts")
+        cur.execute("SELECT * FROM " + table)
 
         for row in cur.fetchall():
-               print(row[0], row[1], row[2], row[3], row[4], row[5])
-
-def UpdateDB(password, database):
-        #Opens and Reads the csv file
-        df = pd.read_csv('/home/eco/MySQL/test.csv', header = 0)
-
-        engine = create_engine('mysql://root:@localhost/Nmap')
-        with engine.connect() as conn, conn.begin():
-                df.to_sql('Hosts', conn, if_exists='append', index=False)
-
-def listtoStings(string):
-        str1 = ""
+               print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+               #[0], row[1], row[2], row[3], row[4], row[5]
+def UpdateDB(file, database, table ):
+        #Opens and Reads timport os
+        df = pd.read_csv(file, header = 0)
         
-        for ele in string:
-                str1 += ele
-                
-        return str1
+        #Connects and uploads csv file to MySQL Database
+        engine = create_engine('mysql://root:@localhost/'+ database)
+        with engine.connect() as conn, conn.begin():
+                df.to_sql(table , conn, if_exists='append', index=False)
+
+#def CreateDatabase():
+
+#def CreateTables():
+
+#Function to clear the screen. Simply call clear()
+def clear():
+        from os import system, name 
+        if name == 'nt': 
+                _ = system('cls') 
+  
+        # for mac and linux(here, os.name is 'posix') 
+        else: 
+                _ = system('clear') 
 
 def main():
-        while True: 
+        #Checks that user has root priviliges
+        user = os.getenv("SUDO_USER")
+        if user is None:
+                print("This program need 'sudo'")
+                exit()
+                
+        while True:
+                clear()
+                print("SQL Database Import")
+                print("""
+Welcome to SQL Database Import Script. This script uses csv files with names for each collum. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
+                """) 
                 choice = input("""Please select from the following menu choices
                 1) View Database
                 2) Update Database
@@ -46,13 +65,17 @@ def main():
                 if choice == "1":
                         password = input("Password: ")
                         database = input("Database: ")
-                        PrintDB(password, database)
+                        table = input("Table: ")
+                        PrintDB(password, database, table)
                         time.sleep(3)
                         print("\n")
                 elif choice == "2":
-                        UpdateDB(password, database)
+                        fp = input("File Path for CSV file: ")
+                        database = input("Database: ")
+                        table = input("Table: ")
+                        UpdateDB(fp, database, table)
                 elif choice == "3":
                         break
 
 
-main()
+main() name 
