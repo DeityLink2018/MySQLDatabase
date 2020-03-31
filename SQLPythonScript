@@ -1,4 +1,4 @@
-from os import system,#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 #Imported Moduels
 import MySQLdb
@@ -20,6 +20,7 @@ def PrintDB(password, database, table):
         for row in cur.fetchall():
                print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
                #[0], row[1], row[2], row[3], row[4], row[5]
+               
 def UpdateDB(file, database, table ):
         #Opens and Reads timport os
         df = pd.read_csv(file, header = 0)
@@ -33,7 +34,6 @@ def UpdateDB(file, database, table ):
 
 #def CreateTables():
 
-#Function to clear the screen. Simply call clear()
 def clear():
         from os import system, name 
         if name == 'nt': 
@@ -70,12 +70,24 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                         time.sleep(3)
                         print("\n")
                 elif choice == "2":
-                        fp = input("File Path for CSV file: ")
+                        while True:
+                                fp = input("File Path for CSV file: ")
+                                try:
+                                        gfp = open(fp)
+                                        gfp.close
+                                        break
+                                except FileNotFoundError:
+                                        print(fp + " can not be located. Please type to correct full file path.")
+                                
                         database = input("Database: ")
                         table = input("Table: ")
                         UpdateDB(fp, database, table)
                 elif choice == "3":
+                        clear()
                         break
+                else:
+                        print("*** " + choice + " not found ***")
+                        time.sleep(3)
 
 
-main() name 
+main()
