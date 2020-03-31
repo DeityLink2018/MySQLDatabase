@@ -68,9 +68,15 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                                 try:
                                         CheckDatabase(database)
                                         break
-                                except MySQLdb._exceptions.ProgrammingError:
+                                except MySQLdb._exceptions.OperationalError:
                                         print(database + " database not found")
-                        table = input("Table: ")
+                        while True:
+                                table = input("Table: ")
+                                try:
+                                        CheckTable(database, table)
+                                        break
+                                except :
+                                       print(table + " table not found")
                         PrintDB(database, table)
                         time.sleep(3)
                         print("\n")
@@ -78,14 +84,23 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                         while True:
                                 fp = input("File Path for CSV file: ")
                                 try:
-                                        gfp = open(fp)
-                                        gfp.close
+                                        CheckFile(fp)
                                         break
                                 except FileNotFoundError:
                                         print(fp + " can not be located. Please type to correct full file path.")
-                                
-                        database = input("Database: ")
-                        table = input("Table: ")
+                        while True:
+                                database = input("Database: ")
+                                try:
+                                        CheckDatabase(database)
+                                except MySQLdb._exceptions.OperationalError:
+                                        print(database + " database not found")
+                        while True:
+                                table = input("Table: ")
+                                try:
+                                        CheckTable(database, table)
+                                        break
+                                except :
+                                       print(table + " table not found")
                         UpdateDB(fp, database, table)
                 elif choice == "3":
                         clear()
@@ -94,8 +109,18 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                         print("*** " + choice + " not found ***")
                         time.sleep(3)
 
+#The Below functions help validate user input.
+
+def CheckFile(ftc):
+        gfp = open(fp)
+        gfp.close
+        
 def CheckDatabase(database):
         db = MySQLdb.connect(host="localhost", user="root", db=database)
-        
+
+def CheckTable(database, table):
+        db = MySQLdb.connect(host="localhost", user="root", db=database)
+        cur = db.cursor()
+        cur.execute("SELECT * FROM " + table)
                 
 main()
