@@ -18,7 +18,7 @@ def PrintDB(database, table):
         cur.execute("SELECT * FROM " + table)
 
         for row in cur.fetchall():
-               print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+               print(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
                #[0], row[1], row[2], row[3], row[4], row[5]
                
 def UpdateDB(file, database, table ):
@@ -92,6 +92,7 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                                 database = input("Database: ")
                                 try:
                                         CheckDatabase(database)
+                                        break
                                 except MySQLdb._exceptions.OperationalError:
                                         print(database + " database not found")
                         while True:
@@ -112,7 +113,7 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
 #The Below functions help validate user input.
 
 def CheckFile(ftc):
-        gfp = open(fp)
+        gfp = open(ftc)
         gfp.close
         
 def CheckDatabase(database):
