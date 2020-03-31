@@ -10,10 +10,10 @@ from sqlalchemy import create_engine
 
 
 #Function to view the database
-def PrintDB(password, database, table):
+def PrintDB(database, table):
         #Password is assumed "root", if differnet change the password to your root password
-        db = MySQLdb.connect(host="localhost", user="root", passwd=password, db=database)
-
+        db = MySQLdb.connect(host="localhost", user="root", db=database)
+          
         cur = db.cursor()
         cur.execute("SELECT * FROM " + table)
 
@@ -63,10 +63,15 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                 
                 ---> """)
                 if choice == "1":
-                        password = input("Password: ")
-                        database = input("Database: ")
+                        while True:
+                                database = input("Database: ")
+                                try:
+                                        CheckDatabase(database)
+                                        break
+                                except MySQLdb._exceptions.ProgrammingError:
+                                        print(database + " database not found")
                         table = input("Table: ")
-                        PrintDB(password, database, table)
+                        PrintDB(database, table)
                         time.sleep(3)
                         print("\n")
                 elif choice == "2":
@@ -89,5 +94,8 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                         print("*** " + choice + " not found ***")
                         time.sleep(3)
 
-
+def CheckDatabase(database):
+        db = MySQLdb.connect(host="localhost", user="root", db=database)
+        
+                
 main()
