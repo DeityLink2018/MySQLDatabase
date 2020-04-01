@@ -10,7 +10,21 @@ from sqlalchemy import create_engine
 
 
 #Function to view the database
-def PrintDB(database, table):
+def PrintDB():
+        while True:
+                database = input("Database: ")
+                try:
+                        CheckDatabase(database)
+                        break
+                except MySQLdb._exceptions.OperationalError:
+                        print(database + " database not found")
+        while True:
+                table = input("Table: ")
+                try:
+                        CheckTable(database, table)
+                        break
+                except:
+                        print(table + " table not found")
         #Password is assumed "root", if differnet change the password to your root password
         db = MySQLdb.connect(host="localhost", user="root", db=database)
           
@@ -20,10 +34,32 @@ def PrintDB(database, table):
         for row in cur.fetchall():
                print(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
                #[0], row[1], row[2], row[3], row[4], row[5]
+        time.sleep(3)
                
-def UpdateDB(file, database, table ):
+def UpdateDB():
+        while True:
+                fp = input("File Path for CSV file: ")
+                try:
+                        CheckFile(fp)
+                        break
+                except FileNotFoundError:
+                        print(fp + " can not be located. Please type to correct full file path.")
+        while True:
+                database = input("Database: ")
+                try:
+                        CheckDatabase(database)
+                        break
+                except MySQLdb._exceptions.OperationalError:
+                        print(database + " database not found")
+        while True:
+                table = input("Table: ")
+                try:
+                        CheckTable(database, table)
+                        break
+                except :
+                        print(table + " table not found")
         #Opens and Reads timport os
-        df = pd.read_csv(file, header = 0)
+        df = pd.read_csv(fp, header = 0)
         
         #Connects and uploads csv file to MySQL Database
         engine = create_engine('mysql://root:@localhost/'+ database)
@@ -43,6 +79,9 @@ def clear():
         else: 
                 _ = system('clear') 
 
+def bye():
+        exit()
+
 def main():
         #Checks that user has root priviliges
         user = os.getenv("SUDO_USER")
@@ -52,63 +91,26 @@ def main():
                 
         while True:
                 clear()
+                switcher = {
+                1: PrintDB,
+                2: UpdateDB,
+                3: bye
+                }
                 print("SQL Database Import")
                 print("""
 Welcome to SQL Database Import Script. This script uses csv files with names for each collum. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
                 """) 
-                choice = input("""Please select from the following menu choices
+                choice = int(input("""Please select from the following menu choices
                 1) View Database
                 2) Update Database
                 3) Exit
                 
-                ---> """)
-                if choice == "1":
-                        while True:
-                                database = input("Database: ")
-                                try:
-                                        CheckDatabase(database)
-                                        break
-                                except MySQLdb._exceptions.OperationalError:
-                                        print(database + " database not found")
-                        while True:
-                                table = input("Table: ")
-                                try:
-                                        CheckTable(database, table)
-                                        break
-                                except :
-                                       print(table + " table not found")
-                        PrintDB(database, table)
-                        time.sleep(3)
-                        print("\n")
-                elif choice == "2":
-                        while True:
-                                fp = input("File Path for CSV file: ")
-                                try:
-                                        CheckFile(fp)
-                                        break
-                                except FileNotFoundError:
-                                        print(fp + " can not be located. Please type to correct full file path.")
-                        while True:
-                                database = input("Database: ")
-                                try:
-                                        CheckDatabase(database)
-                                        break
-                                except MySQLdb._exceptions.OperationalError:
-                                        print(database + " database not found")
-                        while True:
-                                table = input("Table: ")
-                                try:
-                                        CheckTable(database, table)
-                                        break
-                                except :
-                                       print(table + " table not found")
-                        UpdateDB(fp, database, table)
-                elif choice == "3":
-                        clear()
-                        break
-                else:
-                        print("*** " + choice + " not found ***")
-                        time.sleep(3)
+                ---> """))
+                
+                func = switcher.get(choice, lambda: "Invaild Choice")
+                print(func())
+                time.sleep(3)
+                
 
 #The Below functions help validate user input.
 
