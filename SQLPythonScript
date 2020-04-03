@@ -1,3 +1,7 @@
+# SQL Database Insert Script
+# Created by Avery Kleeman
+# The point of this script is to create, delete or modify data within MySQL. With the help of Python3 we are able to pharse through CSV files and input data into tables within MySQL.
+
 #!/usr/bin/env python3
 
 #Imported Moduels
@@ -66,9 +70,41 @@ def UpdateDB():
         with engine.connect() as conn, conn.begin():
                 df.to_sql(table , conn, if_exists='append', index=False)
 
-#def CreateDatabase():
-
-#def CreateTables():
+def CreateDeleteDatabase():
+        clear()
+        cord = input("""Do you want to Create or Delete a database?
+--->""")
+        cordl = cord.lower()
+        while True:
+                if cordl == "create": 
+                        database = input("""What do you want to name your new database?
+---> """ )
+                        db = MySQLdb.connect(host="localhost", user="root")
+                        cur = db.cursor()
+                        cur.execute("CREATE DATABASE " + database)
+                        return "Creating " + database
+                elif cordl == "delete":
+                        database = input("""Which database would you like to delete?
+--->""")
+                        db = MySQLdb.connect(host="localhost", user="root")
+                        cur = db.cursor()
+                        cur.execute("DROP DATABASE " + database)
+                        return "Deleting " + database
+                else:
+                        print("Please choose 'create' or 'delete'")
+def CreateTables():
+        clear()
+        choice = input("""Do you want to create or delete tables?
+--->""")
+        choicel = choice.lower()
+        if choicel == "create":
+                database = input("""What database do you want to connect to?
+--->""")
+                db = MySQLdb.connect(host="localhost", user="root", database=database)
+                table = input("""What is the name of your new table?
+--->""")
+                collums = [str(collums) for collums in input("What are the names of the collums?: ").split()] 
+                
 
 def clear():
         from os import system, name 
@@ -88,14 +124,23 @@ def main():
         if user is None:
                 print("This program need 'sudo'")
                 exit()
-                
+        
+        status = os.system('systemctl is-active --quiet mysql.service')
+        if status is "0":
+                print("MySQL is not running")
+                exit()
+        
         while True:
                 clear()
+                #Python Version of Case statements. This helps the processing of the script, to make it run faster.
                 switcher = {
                 1: PrintDB,
                 2: UpdateDB,
-                3: bye
+                3: CreateDeleteDatabase,
+                4: CreateTables,
+                5: bye
                 }
+                
                 print("SQL Database Import")
                 print("""
 Welcome to SQL Database Import Script. This script uses csv files with names for each collum. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
@@ -103,7 +148,9 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                 choice = int(input("""Please select from the following menu choices
                 1) View Database
                 2) Update Database
-                3) Exit
+                3) Create/Delete Database
+                4) Create/Delete Tables
+                5) Exit
                 
                 ---> """))
                 
