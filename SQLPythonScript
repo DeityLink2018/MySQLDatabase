@@ -4,7 +4,7 @@
 
 #!/usr/bin/env python3
 
-#Imported Moduels
+#Imported Modules
 import MySQLdb
 import pandas as pd
 import os
@@ -38,16 +38,17 @@ def PrintDB():
         for row in cur.fetchall():
                print(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
                #[0], row[1], row[2], row[3], row[4], row[5]
+        return ""
         time.sleep(3)
                
 def UpdateDB():
         while True:
-                fp = input("File Path for CSV file: ")
+                fp = input("Filepath for CSV file: ")
                 try:
                         CheckFile(fp)
                         break
                 except FileNotFoundError:
-                        print(fp + " can not be located. Please type to correct full file path.")
+                        print(fp + " cannot be located. Please input correct filepath.")
         while True:
                 database = input("Database: ")
                 try:
@@ -65,10 +66,12 @@ def UpdateDB():
         #Opens and Reads timport os
         df = pd.read_csv(fp, header = 0)
         
-        #Connects and uploads csv file to MySQL Database
+        #Connects and uploads CSV file to MySQL Database
         engine = create_engine('mysql://root:@localhost/'+ database)
         with engine.connect() as conn, conn.begin():
                 df.to_sql(table , conn, if_exists='append', index=False)
+        
+        return ""
 
 def CreateDeleteDatabase():
         clear()
@@ -84,10 +87,19 @@ def CreateDeleteDatabase():
                         cur.execute("CREATE DATABASE " + database)
                         return "Creating " + database
                 elif cordl == "delete":
-                        database = input("""Which database would you like to delete?
---->""")
+                        clear()
+                        print("""Which database would you like to delete?\n""")
                         db = MySQLdb.connect(host="localhost", user="root")
                         cur = db.cursor()
+                        cur.execute("show databases")
+                        print("""
++-------------+
+|  Databases  |
++-------------+""")
+                        for row in cur.fetchall():
+                                print(row[0])
+                        database = input("""
+--->""")
                         cur.execute("DROP DATABASE " + database)
                         return "Deleting " + database
                 else:
@@ -103,7 +115,7 @@ def CreateTables():
                 db = MySQLdb.connect(host="localhost", user="root", database=database)
                 table = input("""What is the name of your new table?
 --->""")
-                collums = [str(collums) for collums in input("What are the names of the collums?: ").split()] 
+                columns = [str(columns) for columns in input("What are the names of the columns?: ").split()] 
                 
 
 def clear():
@@ -119,7 +131,7 @@ def bye():
         exit()
 
 def main():
-        #Checks that user has root priviliges
+        #Checks that user has root privileges
         user = os.getenv("SUDO_USER")
         if user is None:
                 print("This program need 'sudo'")
@@ -143,7 +155,7 @@ def main():
                 
                 print("SQL Database Import")
                 print("""
-Welcome to SQL Database Import Script. This script uses csv files with names for each collum. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
+Welcome to SQL Database Import Script. This script uses csv files with names for each column. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
                 """) 
                 choice = int(input("""Please select from the following menu choices
                 1) View Database
@@ -154,7 +166,7 @@ Welcome to SQL Database Import Script. This script uses csv files with names for
                 
                 ---> """))
                 
-                func = switcher.get(choice, lambda: "Invaild Choice")
+                func = switcher.get(choice, lambda: "Invalid Choice")
                 print(func())
                 time.sleep(3)
                 
