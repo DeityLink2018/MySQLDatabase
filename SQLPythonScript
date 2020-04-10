@@ -97,7 +97,8 @@ def CreateDeleteDatabase():
 |  Databases  |
 +-------------+""")
                         for row in cur.fetchall():
-                                print(row[0])
+                                print("|" + row[0] + "\t|" + """
++-------------+""")
                         database = input("""
 --->""")
                         cur.execute("DROP DATABASE " + database)
