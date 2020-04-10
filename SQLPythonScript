@@ -105,20 +105,20 @@ def CreateDeleteDatabase():
                         return "Deleting " + database
                 else:
                         print("Please choose 'create' or 'delete'")
-def CreateTables():
-        clear()
-        choice = input("""Do you want to create or delete tables?
---->""")
-        choicel = choice.lower()
-        if choicel == "create":
-                database = input("""What database do you want to connect to?
---->""")
-                db = MySQLdb.connect(host="localhost", user="root", database=database)
-                table = input("""What is the name of your new table?
---->""")
-                columns = [str(columns) for columns in input("What are the names of the columns?: ").split()] 
-                
-
+#def CreateTables():
+#        clear()
+#        choice = input("""Do you want to create or delete tables?
+#--->""")
+#        choicel = choice.lower()
+#        if choicel == "create":
+#                database = input("""What database do you want to connect to?
+#--->""")
+#                db = MySQLdb.connect(host="localhost", user="root", database=database)
+#                table = input("""What is the name of your new table?
+#--->""")
+#                columns = [str(columns) for columns in input("What are the names of the columns?: ").split()] 
+#                
+#
 def clear():
         from os import system, name 
         if name == 'nt': 
@@ -150,22 +150,31 @@ def main():
                 1: PrintDB,
                 2: UpdateDB,
                 3: CreateDeleteDatabase,
-                4: CreateTables,
-                5: bye
+                4: bye
                 }
                 
                 print("SQL Database Import")
                 print("""
-Welcome to SQL Database Import Script. This script uses csv files with names for each column. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.\n 
-                """) 
-                choice = int(input("""Please select from the following menu choices
+Welcome to SQL Database Import Script. This script uses csv files with names for each column. You must have your Database and Table already set up within MySQL. Creating Databases and Tables will be a feature later added to this script.""")
+                
+                print("""
++-------------+
+|  Databases  |
++-------------+""")
+                db = MySQLdb.connect(host="localhost", user="root")
+                cur = db.cursor()
+                cur.execute("show databases")
+                for row in cur.fetchall():
+                        print(row[0] )
+                 
+                print("""\n\nPlease select from the following menu choices
                 1) View Database
                 2) Update Database
                 3) Create/Delete Database
-                4) Create/Delete Tables
-                5) Exit
+                4) Exit
+                """)
                 
-                ---> """))
+                choice = int(input("--->"))
                 
                 func = switcher.get(choice, lambda: "Invalid Choice")
                 print(func())
